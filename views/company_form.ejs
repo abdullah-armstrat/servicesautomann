@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Company Settings</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="wrapper">
+    <%- include('partials/sidebar') %>
+    <div class="main">
+      <%- include('partials/topbar') %>
+
+      <h1>Company Settings</h1>
+      <form action="/company" method="post" enctype="multipart/form-data">
+        <fieldset>
+          <legend>Details</legend>
+
+          <label for="name">Company Name</label>
+          <input type="text" id="name" name="name" value="<%= company?.name||'' %>" required />
+
+          <label for="tin">TIN</label>
+          <input type="text" id="tin" name="tin" value="<%= company?.tin||'' %>" />
+
+          <label for="address">Address</label>
+          <textarea id="address" name="address"><%= company?.address||'' %></textarea>
+
+          <label for="phone">Phone</label>
+          <input type="text" id="phone" name="phone" value="<%= company?.phone||'' %>" />
+
+          <label for="logo">Logo</label>
+          <% if (company?.logo) { %>
+            <div class="logo-container">
+              <img src="/uploads/company/<%= company.logo %>" alt="Logo" />
+            </div>
+          <% } %>
+          <input type="file" id="logo" name="logo" accept="image/*" />
+
+        </fieldset>
+        <button type="submit">Save Company</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<%
+  const comp = typeof company !== 'undefined' && company ? company : {};
+%>
+<div class="topbar">
+  <div class="topbar-left">
+    <% if (comp.logo) { %>
+      <img
+        src="/uploads/company/<%= comp.logo %>"
+        alt="<%= comp.name %>"
+        class="topbar-logo-img"
+      />
+    <% } %>
+    <div class="company-name"><%= comp.name || 'Armstrat' %></div>
+  </div>
+
+  <div class="profile-right">
+    <div class="greeting">Hello, <%= username || 'User' %></div>
+    <div class="profile-dropdown">
+      <img
+        src="/uploads/<%= username %>.png"
+        class="avatar-small"
+        onclick="document.querySelector('.dropdown-menu').classList.toggle('visible')"
+      />
+      <div class="dropdown-menu">
+        <a href="/account">Profile</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>

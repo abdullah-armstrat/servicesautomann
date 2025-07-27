@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title><%= edit ? 'Edit' : 'Create' %> Invoice</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+  <div class="wrapper">
+    <%- include('partials/sidebar') %>
+
+    <div class="main">
+      <%- include('partials/topbar') %>
+
+      <h1><%= edit ? 'Edit' : 'Create' %> Invoice</h1>
+      <% if (error) { %><p class="error"><%= error %></p><% } %>
+
+      <!-- correct action depending on mode -->
+      <form action="<%= edit ? '/invoice/' + inv.id + '/edit' : '/create-invoice' %>"
+            method="post">
+        <!-- ───────── Customer ───────── -->
+        <fieldset>
+          <legend>Customer</legend>
+
+          <label>Name
+            <input name="name"
+                   value="<%= edit ? inv.name : '' %>"
+                   required />
+          </label>
+
+          <label>Phone
+            <input name="phone"
+                   value="<%= edit ? inv.phone : '' %>" />
+          </label>
+
+          <label>Email
+            <input name="email" type="email"
+                   value="<%= edit ? inv.email : '' %>" />
+          </label>
+
+          <label>Vehicle Make
+            <input name="vehicle_make"
+                   value="<%= edit ? inv.vehicle_make : '' %>" />
+          </label>
+
+          <label>Vehicle Model
+            <input name="vehicle_model"
+                   value="<%= edit ? inv.vehicle_model : '' %>" />
+          </label>
+
+          <label>Vehicle Year
+            <input name="vehicle_year" type="number"
+                   value="<%= edit ? inv.vehicle_year : '' %>" />
+          </label>
+        </fieldset>
+
+        <!-- ───────── Invoice meta ───────── -->
+        <fieldset>
+          <legend>Invoice Meta</legend>
+
+          <label>Date
+            <input name="invoice_date"
+                   type="date"
+                   value="<%= currentDate %>"
+                   required />
+          </label>
+
+          <% if (edit) { %>
+            <label>Status
+              <select name="status">
+                <option value="Unpaid" <%= inv.status==='Unpaid'?'selected':'' %>>
+                  Unpaid
+                </option>
+                <option value="Paid"   <%= inv.status==='Paid'  ?'selected':'' %>>
+                  Paid
+                </option>
+              </select>
+            </label>
+          <% } %>
+        </fieldset>
+
+        <!-- ───────── Line items ───────── -->
+        <fieldset>
+          <legend>Line Items</legend>
+
+          <div id="items">
+            <% if (items.length) {                     /* edit mode rows */ %>
+              <% items.forEach(function(it, i){ %>
+                <div class="item-row">
+                  <input name="description"
+                         placeholder="Description"
+                         value="<%= it.description %>" required />
+
+                  <input name="quantity"   type="number" class="small-input"
+                         value="<%= it.quantity %>"      required />
+
+                  <input name="unit_price" type="number" class="medium-input"
+                         step="0.01"
+                         value="<%= it.unit_price %>"    required />
+                </div>
+              <% }) %>
+            <% } else {                               /* create mode blank row */ %>
+              <div class="item-row">
+                <input name="description" placeholder="Description" required />
+                <input name="quantity"   type="number" class="small-input"  required />
+                <input name="unit_price" type="number" class="medium-input" step="0.01" required />
+              </div>
+            <% } %>
+          </div>
+
+          <button type="button" id="addItem">+ Add Item</button>
+        </fieldset>
+
+        <button type="submit"><%= edit ? 'Save Changes' : 'Save Invoice' %></button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    /* clone a blank item row */
+    document.getElementById('addItem').addEventListener('click', () => {
+      const row = document.querySelector('.item-row').cloneNode(true);
+      row.querySelectorAll('input').forEach(inp => inp.value = '');
+      document.getElementById('items').appendChild(row);
+    });
+  </script>
+</body>
+</html>

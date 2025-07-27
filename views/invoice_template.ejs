@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invoice <%= invoice.id %></title>
+  <style>
+    /* ---------- Base ---------- */
+    *{ box-sizing:border-box; }
+    body{
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin:0; padding:0; color:#333; background:#f2f2f7;
+    }
+    .invoice-box{
+      width: 840px;            /* fits on A4 / Letter with margins */
+      margin: 40px auto;
+      padding: 28px 40px;
+      background:#fff;
+      border-radius: 8px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+    h1,h2{ margin:0; }
+    small{ color:#777; }
+
+    /* ---------- Header ---------- */
+    .header{
+      display:flex; justify-content:space-between; align-items:flex-start;
+      margin-bottom:36px;
+    }
+    .header img.logo{
+      max-width:160px; max-height:70px; object-fit:contain;
+    }
+    .company{
+      text-align:right; font-size:.9rem; line-height:1.4;
+    }
+    .company strong{ font-size:1.1rem; display:block; margin-bottom:4px; }
+
+    /* ---------- Info blocks ---------- */
+    .info-grid{
+      display:flex; justify-content:space-between; margin-bottom:32px;
+      font-size:.9rem;
+    }
+    .info-block{ width:48%; line-height:1.6; }
+    .info-block strong{ display:block; margin-bottom:6px; }
+
+    /* ---------- Items table ---------- */
+    table{
+      width:100%; border-collapse:collapse; font-size:.9rem;
+      margin-bottom:26px;
+    }
+    th, td{ padding:10px 12px; }
+    th{
+      background:#f0f0f5; text-align:left;
+      border-bottom:2px solid #d0d0d0;
+    }
+    td{ border-bottom:1px solid #eee; }
+    tr:nth-child(even) td{ background:#fafafa; }
+
+    td.qty, td.money{ text-align:right; }
+
+    /* ---------- Totals ---------- */
+    .totals{
+      width:100%; max-width:300px; margin-left:auto;
+      border:1px solid #e0e0e0; border-radius:6px;
+      font-size:.9rem;
+    }
+    .totals td{
+      padding:8px 12px;
+    }
+    .totals tr:not(:last-child) td{
+      border-bottom:1px solid #f0f0f0;
+    }
+    .totals td.label{ width:60%; }
+    .totals td.value{ width:40%; text-align:right; }
+    .totals tr.total td{
+      font-weight:700; font-size:1rem; background:#fafafa;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="invoice-box">
+    <!-- Header -->
+    <div class="header">
+      <% if (company && company.logo) { %>
+        <img src="/uploads/company/<%= company.logo %>" class="logo" alt="Logo" />
+      <% } %>
+      <div class="company">
+        <strong><%= company?.name || 'Your Company' %></strong>
+        <%= company?.address.replace(/\n/g,'<br>') %><br>
+        TIN #: <%= company?.tin || '—' %><br>
+        Phone: <%= company?.phone || '—' %>
+      </div>
+    </div>
+
+    <!-- Invoice & Billing Info -->
+    <div class="info-grid">
+      <div class="info-block">
+        <strong>Invoice</strong>
+        No.: <%= invoice.id %><br>
+        Date: <%= invoice.date %><br>
+        Status: <%= invoice.status || 'Unpaid' %>
+      </div>
+
+      <div class="info-block">
+        <strong>Bill To</strong>
+        <%= customer.name %><br>
+        <%= customer.email || '' %><br>
+        Phone: <%= customer.phone || '' %><br>
+        Vehicle: <%= customer.vehicle_year %> <%= customer.vehicle_make %> <%= customer.vehicle_model %>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th class="qty">Qty</th>
+          <th class="money">Unit Price</th>
+          <th class="money">Line Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(item => { %>
+          <tr>
+            <td><%= item.description %></td>
+            <td class="qty"><%= item.quantity %></td>
+            <td class="money">$<%= item.unit_price.toFixed(2) %></td>
+            <td class="money">$<%= (item.quantity * item.unit_price).toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- Totals -->
+    <table class="totals">
+      <tr>
+        <td class="label">Subtotal</td>
+        <td class="value">$<%= invoice.subtotal.toFixed(2) %></td>
+      </tr>
+      <tr>
+        <td class="label">GST (5%)</td>
+        <td class="value">$<%= invoice.gst.toFixed(2) %></td>
+      </tr>
+      <tr>
+        <td class="label">QST (9.975%)</td>
+        <td class="value">$<%= invoice.qst.toFixed(2) %></td>
+      </tr>
+      <tr class="total">
+        <td class="label">Total</td>
+        <td class="value">$<%= invoice.total.toFixed(2) %></td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard – ServicesAutomann</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="wrapper">
+    <%- include('partials/sidebar'); %>
+
+    <div class="main dash-layout">
+      <%- include('partials/topbar'); %>
+
+      <!-- ───── header & stat tiles ───── -->
+      <header class="dash-header">
+        <h1>Dashboard</h1>
+
+        <div class="stat-grid">
+          <div class="tile"><h3>Total Customers</h3><p><%= metrics.totalCustomers %></p></div>
+          <div class="tile"><h3>Total Invoices</h3><p><%= metrics.totalInvoices %></p></div>
+          <div class="tile"><h3>Total Revenue</h3><p>$<%= metrics.totalRevenue.toFixed(2) %></p></div>
+          <div class="tile"><h3>Avg. Invoice</h3><p>$<%= metrics.avgInvoice.toFixed(2) %></p></div>
+        </div>
+      </header>
+
+      <!-- ───── filter row + chart ───── -->
+      <section class="dash-body">
+        <div class="filter-row">
+          <label>From <input type="month" id="fromDate"></label>
+          <label>To <input type="month" id="toDate"></label>
+          <button id="filterBtn">Filter</button>
+        </div>
+
+        <!-- fixed‑height wrapper stops infinite growth -->
+        <div class="chart-box">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ────────── JS: chart & UI helpers ────────── -->
+  <script>
+    const revenueData = <%- JSON.stringify(revenueData) %>;
+    const fromInput   = document.getElementById('fromDate');
+    const toInput     = document.getElementById('toDate');
+    const btn         = document.getElementById('filterBtn');
+    let   revChart;
+
+    function drawChart(rows){
+      const labels = rows.map(r => r.date);
+      const values = rows.map(r => r.revenue);
+      const ctx    = document.getElementById('revenueChart').getContext('2d');
+
+      if (revChart){
+        revChart.data.labels  = labels;
+        revChart.data.datasets[0].data = values;
+        revChart.update();
+      } else {
+        revChart = new Chart(ctx,{
+          type:'line',
+          data:{
+            labels,
+            datasets:[{
+              label:'Revenue',
+              data:values,
+              fill:false,
+              tension:.25,
+              borderColor:'#007aff',
+              borderWidth:2,
+              pointRadius:3
+            }]
+          },
+          options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            plugins:{ legend:{ display:false }},
+            scales:{
+              x:{ grid:{ display:false }},
+              y:{ beginAtZero:true, grid:{ color:'#eee' }}
+            }
+          }
+        });
+      }
+    }
+
+    if (revenueData.length){
+      fromInput.value = revenueData[0].date.slice(0,7);
+      toInput.value   = revenueData.at(-1).date.slice(0,7);
+      drawChart(revenueData);
+    }
+
+    btn.addEventListener('click',()=>{
+      const from = fromInput.value, to = toInput.value;
+      if(!from||!to) return;
+      drawChart(revenueData.filter(r=>{
+        const m = r.date.slice(0,7);
+        return m >= from && m <= to;
+      }));
+    });
+
+    /* sidebar toggle & profile dropdown */
+    document.getElementById('toggleBtn')
+      .addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('collapsed'));
+
+    const profileBtn=document.getElementById('profileBtn');
+    const profileMenu=document.getElementById('profileMenu');
+    profileBtn.addEventListener('click',()=>profileMenu.classList.toggle('visible'));
+    document.addEventListener('click',e=>{
+      if(!profileBtn.contains(e.target)&&!profileMenu.contains(e.target)){
+        profileMenu.classList.remove('visible');
+      }
+    });
+  </script>
+
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script>feather.replace();</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ServicesAutomann</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to ServicesAutomann Inc.</h1>
+    <ul>
+      <li><a href="/create-invoice">➕ Create Invoice</a></li>
+      <li><a href="/invoices">📄 View All Invoices</a></li>
+    </ul>
+  </div>
+  <script src="https://unpkg.com/feather-icons"></script>
+<script>
+  // Replace all <svg data-feather> with icons
+  feather.replace();
+
+  // Sidebar toggle logic
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('toggleBtn');
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+  });
+</script>
+</body>
+</html>

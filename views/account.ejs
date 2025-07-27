@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Account Settings – ServicesAutomann</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="wrapper">
+    <%- include('partials/sidebar'); %>
+    <div class="main">
+      <%- include('partials/topbar'); %>
+
+      <h2>Account Settings</h2>
+      <div class="profile-settings">
+        <img
+          src="/uploads/<%= username %>.png"
+          onerror="this.src='/images/default-avatar.png';"
+          class="avatar-large"
+        />
+        <form method="POST" action="/account" enctype="multipart/form-data">
+          <label>Upload Profile Photo</label>
+          <input type="file" name="avatar" accept="image/*" required />
+          <button type="submit">Upload</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feather & toggle -->
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script>
+    feather.replace();
+    document.getElementById('toggleBtn')
+      .addEventListener('click', () =>
+        document.getElementById('sidebar').classList.toggle('collapsed')
+      );
+    const profileBtn  = document.getElementById('profileBtn');
+    const profileMenu = document.getElementById('profileMenu');
+    profileBtn.addEventListener('click', () => profileMenu.classList.toggle('visible'));
+    document.addEventListener('click', e => {
+      if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target))
+        profileMenu.classList.remove('visible');
+    });
+  </script>
+</body>
+</html>

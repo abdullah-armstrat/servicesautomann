@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>All Invoices</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body>
+  <div class="wrapper">
+    <%- include('partials/sidebar'); %>
+
+    <div class="main">
+      <%- include('partials/topbar'); %>
+
+      <h1>All Invoices</h1>
+
+      <table class="invoice-table pretty">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% invoices.forEach(inv => { %>
+            <tr>
+              <td><%= inv.id %></td>
+              <td><%= inv.customer_name %></td>
+              <td><%= inv.inv_date %></td>
+              <td>$<%= Number(inv.total).toFixed(2) %></td>
+              <td class="actions">
+                <button class="dots" type="button">
+                  <i data-feather="more-vertical"></i>
+                </button>
+                <div class="menu">
+                  <a href="/invoice/<%= inv.id %>/pdf">Download</a>
+                  <a href="/invoice/<%= inv.id %>/edit">Edit</a>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <!-- pagination -->
+      <div class="pagination">
+        <% for (let i = 1; i <= pages; i++) { %>
+          <a href="/invoices?page=<%= i %>"
+             class="<%= page === i ? 'current' : '' %>"><%= i %></a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+<script>
+  feather.replace();
+
+  /* toggle three‑dot menu */
+  document.querySelectorAll('.dots').forEach(btn=>{
+    const menu = btn.nextElementSibling;
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      menu.classList.toggle('show');
+      document.querySelectorAll('.menu').forEach(m=> m!==menu && m.classList.remove('show'));
+    });
+  });
+  document.addEventListener('click', ()=> document.querySelectorAll('.menu').forEach(m=>m.classList.remove('show')));
+</script>
+</body>
+</html>
